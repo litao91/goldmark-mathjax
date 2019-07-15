@@ -1,8 +1,6 @@
 package mathjax
 
 import (
-	"fmt"
-
 	gast "github.com/yuin/goldmark/ast"
 	"github.com/yuin/goldmark/renderer"
 	"github.com/yuin/goldmark/util"
@@ -23,7 +21,6 @@ func (r *MathBlockRenderer) writeLines(w util.BufWriter, source []byte, n gast.N
 	l := n.Lines().Len()
 	for i := 0; i < l; i++ {
 		line := n.Lines().At(i)
-		fmt.Println(string(line.Value(source)))
 		w.Write(line.Value(source))
 	}
 }
