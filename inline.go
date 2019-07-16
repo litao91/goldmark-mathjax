@@ -83,6 +83,6 @@ end:
 	return node
 }
 
-func NewInlineMathRenderer() renderer.NodeRenderer {
-	return &InlineMathRenderer{}
+func NewInlineMathRenderer(start, end string) renderer.NodeRenderer {
+	return &InlineMathRenderer{start, end}
 }

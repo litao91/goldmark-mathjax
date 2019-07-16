@@ -9,11 +9,13 @@ import (
 )
 
 type InlineMathRenderer struct {
+	startDelim string
+	endDelim string
 }
 
 func (r *InlineMathRenderer) renderInlineMath(w util.BufWriter, source []byte, n ast.Node, entering bool) (ast.WalkStatus, error) {
 	if entering {
-		_, _ = w.WriteString(`<span class="math inline">\(`)
+		_, _ = w.WriteString(`<span class="math inline">` + r.startDelim)
 		for c := n.FirstChild(); c != nil; c = c.NextSibling() {
 			segment := c.(*ast.Text).Segment
 			value := segment.Value(source)
@@ -28,7 +30,7 @@ func (r *InlineMathRenderer) renderInlineMath(w util.BufWriter, source []byte, n
 		}
 		return ast.WalkSkipChildren, nil
 	}
-	_, _ = w.WriteString(`\)</span>`)
+	_, _ = w.WriteString(r.endDelim + `</span>`)
 	return ast.WalkContinue, nil
 }
 
