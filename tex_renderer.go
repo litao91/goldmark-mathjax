@@ -42,7 +42,7 @@ type TexRenderer struct {
 func NewDefaultTexRenderer() *TexRenderer {
 	var t, err = template.New("html").Parse(tmpl)
 	if err != nil {
-		panic(err)
+		fmt.Println("error")
 	}
 
 	var wd, _ = os.Getwd()
@@ -78,7 +78,7 @@ func (r *TexRenderer) Run(formula string) []byte {
 		return nil
 	}
 	svg, err := ioutil.ReadAll(svgf)
-	if err != nil  {
+	if err != nil {
 		return nil
 	}
 	return svg
@@ -93,7 +93,7 @@ func (r *TexRenderer) runDvi2Svg(fname string) {
 	cmd.Stderr = &stderr
 	err := cmd.Run()
 	if err != nil {
-		log.Fatalf("cmd.Run() failed with %s\n", err)
+		fmt.Printf("dvi2svg cmd.Run() failed with %s\n", err)
 	}
 	outStr, errStr := string(stdout.Bytes()), string(stderr.Bytes())
 	fmt.Printf("out:\n%s\nerr:\n%s\n", outStr, errStr)
@@ -106,7 +106,7 @@ func (r *TexRenderer) runLatex(fname string) {
 	cmd.Stderr = &stderr
 	err := cmd.Run()
 	if err != nil {
-		log.Fatalf("cmd.Run() failed with %s\n", err)
+		fmt.Printf("latex cmd.Run() failed with %s\n", err)
 	}
 	outStr, errStr := string(stdout.Bytes()), string(stderr.Bytes())
 	fmt.Printf("out:\n%s\nerr:\n%s\n", outStr, errStr)
