@@ -21,7 +21,7 @@ const displayInlineFormula = `
 \documentclass{article}
 \usepackage[active,tightpage,textmath]{preview}
 \begin{document}
-%s
+\(%s\)
 \end{document}
 `
 

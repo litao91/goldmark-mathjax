@@ -1,6 +1,7 @@
 package mathjax
 
 import (
+	"encoding/base64"
 	"bytes"
 
 	gast "github.com/yuin/goldmark/ast"
@@ -27,12 +28,12 @@ func (r *MathTexBlockRenderer) writeLines(w *bytes.Buffer, source []byte, n gast
 func (r *MathTexBlockRenderer) renderMathBlock(w util.BufWriter, source []byte, node gast.Node, entering bool) (gast.WalkStatus, error) {
 	n := node.(*MathBlock)
 	if entering {
-		_, _ = w.WriteString(`<div class="latex-svg display" style="vertical-align:middle;">`)
+		_, _ = w.WriteString(`<div class="latex-svg display">`)
 		var buf bytes.Buffer
 		r.writeLines(&buf, source, n)
 		str := buf.String()
 		svg := r.renderer.Run(str)
-		_, _ = w.WriteString(string(svg))
+		w.WriteString(`<img alt="" src="data:image/svg+xml;base64, ` + base64.StdEncoding.EncodeToString(svg) + `">`)
 	} else {
 		_, _ = w.WriteString(`</div>` + "\n")
 	}
