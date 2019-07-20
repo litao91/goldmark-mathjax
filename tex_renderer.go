@@ -112,8 +112,6 @@ func (r *TexRenderer) Run(formula string) []byte {
 	var tmpl string
 	if strings.Contains(formula, `\begin{tikzpicture}`) {
 		tmpl = r.tikzTmpl
-	} else if strings.Contains(formula, `\begin{`) {
-		tmpl = r.commonBlockTmpl
 	} else {
 		tmpl = r.blockFormulaTmpl
 	}
