@@ -66,7 +66,8 @@ const tikz = `
 \documentclass[11pt]{article}
 \usepackage{tikz}
 \usepackage{lipsum}
-
+\usepackage{paralist,pst-func, pst-plot, pst-math, pstricks-add,pgfplots}
+\usetikzlibrary{patterns,matrix,arrows}
 \usepackage[active,tightpage]{preview}
 \PreviewEnvironment{tikzpicture}
 \setlength\PreviewBorder{1pt}
