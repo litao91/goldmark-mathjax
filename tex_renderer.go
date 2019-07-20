@@ -141,8 +141,8 @@ func (r *TexRenderer) runRaw(formula string) []byte {
 	f.WriteString(formula)
 	f.Sync()
 	f.Close()
-	r.runLatex(f.Name())
-	r.runDvi2Svg(f.Name())
+	r.runPdfLatex(f.Name())
+	r.runPdf2Svg(f.Name())
 	svgf, err := os.Open(f.Name() + ".svg")
 	if err != nil {
 		return nil
@@ -180,4 +180,26 @@ func (r *TexRenderer) runLatex(fname string) {
 	}
 	// outStr, errStr := string(stdout.Bytes()), string(stderr.Bytes())
 	// fmt.Printf("out:\n%s\nerr:\n%s\n", outStr, errStr)
+}
+
+func (r *TexRenderer) runPdfLatex(fname string) {
+	cmd := exec.Command(fmt.Sprintf("%spdflatex", r.texPath), "-output-directory", r.tmpDir, fname)
+	var stdout, stderr bytes.Buffer
+	cmd.Stdout = &stdout
+	cmd.Stderr = &stderr
+	err := cmd.Run()
+	if err != nil {
+		fmt.Printf("latex cmd.Run() failed with %s\n", err)
+	}
+}
+
+func (r *TexRenderer) runPdf2Svg(fname string) {
+	cmd := exec.Command("pdf2svg", fmt.Sprintf("%s.pdf", fname), fmt.Sprintf("%s.svg", fname))
+	var stdout, stderr bytes.Buffer
+	cmd.Stdout = &stdout
+	cmd.Stderr = &stderr
+	err := cmd.Run()
+	if err != nil {
+		fmt.Printf("dvi2svg cmd.Run() failed with %s\n", err)
+	}
 }
