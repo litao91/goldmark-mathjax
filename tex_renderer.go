@@ -21,7 +21,7 @@ const common = `
 `
 
 const displayInlineFormula = `
-\documentclass{article}
+\documentclass[11pt]{article}
 \usepackage[active,tightpage,textmath]{preview}
 \usepackage{amsmath}
 \usepackage{amssymb}
@@ -32,7 +32,7 @@ const displayInlineFormula = `
 `
 
 const displayBlockFormula = `
-\documentclass[preview]{standalone}
+\documentclass[11pt,preview]{standalone}
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{stmaryrd}
@@ -63,7 +63,7 @@ const tmpl = `
 `
 
 const tikz = `
-\documentclass{article}
+\documentclass[11pt]{article}
 \usepackage{tikz}
 \usepackage{lipsum}
 
@@ -110,8 +110,11 @@ func (r *TexRenderer) RunInline(formula string) []byte {
 
 func (r *TexRenderer) Run(formula string) []byte {
 	var tmpl string
+	formula = strings.TrimSpace(formula)
 	if strings.Contains(formula, `\begin{tikzpicture}`) {
 		tmpl = r.tikzTmpl
+	} else if (strings.HasPrefix(formula, `\begin{`)) {
+		tmpl = r.commonBlockTmpl
 	} else {
 		tmpl = r.blockFormulaTmpl
 	}
