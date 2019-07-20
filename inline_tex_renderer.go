@@ -3,7 +3,6 @@ package mathjax
 import (
 	"bytes"
 	"fmt"
-	"html"
 
 	"github.com/yuin/goldmark/ast"
 	"github.com/yuin/goldmark/renderer"
@@ -30,7 +29,7 @@ func (r *InlineTexMathRenderer) renderInlineMath(w util.BufWriter, source []byte
 			}
 		}
 		fmt.Println(buf.String())
-		svg := r.texRenderer.Run("$" + html.UnescapeString(buf.String()) + "$")
+		svg := r.texRenderer.RunInline(buf.String())
 		_, _ = w.WriteString(`<span class="latex-svg inline">`)
 		if svg != nil {
 			_, _ = w.WriteString(string(svg))

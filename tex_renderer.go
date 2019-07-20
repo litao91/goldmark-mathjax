@@ -1,14 +1,28 @@
 package mathjax
 
 import (
+	"bufio"
 	"bytes"
 	"fmt"
-	"text/template"
 	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
+	"strings"
+	"text/template"
 )
+
+const common = `
+{{.Doc}}
+`
+
+const displayInlineFormula = `${{.Doc}}$`
+
+const displayBlockFormula = `
+\[
+{{.Doc}}
+\]
+`
 
 const tmpl = `
 \documentclass[11pt]{article}
@@ -35,15 +49,30 @@ const tmpl = `
 `
 
 type TexRenderer struct {
-	texPath     string
-	docTemplate *template.Template
-	tmpDir      string
+	texPath         string
+	docTemplate     *template.Template
+	inlineFormulaImpl      *template.Template
+	commonBlockTmpl *template.Template
+	blockFormulaTmpl     *template.Template
+	tmpDir          string
 }
 
 func NewDefaultTexRenderer() *TexRenderer {
-	var t, err = template.New("text").Parse(tmpl)
+	docTmpl, err := template.New("text").Parse(tmpl)
 	if err != nil {
-		fmt.Println("error")
+		fmt.Println(err)
+	}
+	inlineTmpl, err := template.New("text").Parse(displayInlineFormula)
+	if err != nil {
+		fmt.Println(err)
+	}
+	displayBlockFormulaTmpl, err := template.New("text").Parse(displayBlockFormula)
+	if err != nil {
+		fmt.Println(err)
+	}
+	commonTmpl, err := template.New("text").Parse(common)
+	if err != nil {
+		fmt.Println(err)
 	}
 
 	var wd, _ = os.Getwd()
@@ -52,23 +81,64 @@ func NewDefaultTexRenderer() *TexRenderer {
 	var tmpDir = wd + "/tmp/"
 
 	var defaultRenderer = &TexRenderer{
-		texPath:     texPath,
-		docTemplate: t,
-		tmpDir:      tmpDir,
+		texPath:         texPath,
+		docTemplate:     docTmpl,
+		inlineFormulaImpl:      inlineTmpl,
+		commonBlockTmpl: commonTmpl,
+		blockFormulaTmpl:     displayBlockFormulaTmpl,
+		tmpDir:          tmpDir,
 	}
 	return defaultRenderer
 }
 
+type DocT struct {
+	Doc string
+}
+
+func (r *TexRenderer) RunInline(formula string) []byte {
+	var buf bytes.Buffer
+	writer := bufio.NewWriter(&buf)
+	r.inlineFormulaImpl.Execute(writer, &DocT{
+		Doc: formula,
+	})
+	writer.Flush()
+
+	var docBuf bytes.Buffer
+	docWriter := bufio.NewWriter(&docBuf)
+	r.docTemplate.Execute(docWriter, &DocT{
+		Doc: buf.String(),
+	})
+	docWriter.Flush()
+	return r.runRaw(docBuf.String())
+}
+
 func (r *TexRenderer) Run(formula string) []byte {
+	var bf bytes.Buffer
+	writer := bufio.NewWriter(&bf)
+	var tmpl *template.Template
+	if strings.Contains(formula, `\begin{`) {
+		tmpl = r.commonBlockTmpl
+	} else {
+		tmpl = r.blockFormulaTmpl
+	}
+	tmpl.Execute(writer, &DocT{
+		Doc: formula,
+	})
+	writer.Flush()
+
+	var docBf bytes.Buffer
+	docWriter := bufio.NewWriter(&docBf)
+	r.docTemplate.Execute(docWriter, &DocT{bf.String()})
+	docWriter.Flush()
+	return r.runRaw(docBf.String())
+}
+
+func (r *TexRenderer) runRaw(formula string) []byte {
 	f, err := ioutil.TempFile(r.tmpDir, "doc")
 	if err != nil {
 		log.Fatalf("%v", err)
 	}
-	r.docTemplate.Execute(f, struct {
-		Doc string
-	}{
-		Doc: formula,
-	})
+	f.WriteString(formula)
 	f.Sync()
 	f.Close()
 	r.runLatex(f.Name())
