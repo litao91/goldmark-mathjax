@@ -12,6 +12,9 @@ import (
 
 const common = `
 \documentclass[preview]{standalone}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{stmaryrd}
 \begin{document}
 %s
 \end{document}
@@ -20,6 +23,9 @@ const common = `
 const displayInlineFormula = `
 \documentclass{article}
 \usepackage[active,tightpage,textmath]{preview}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{stmaryrd}
 \begin{document}
 \(%s\)
 \end{document}
@@ -27,6 +33,9 @@ const displayInlineFormula = `
 
 const displayBlockFormula = `
 \documentclass[preview]{standalone}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{stmaryrd}
 \begin{document}
 \begin{equation}
 %s
@@ -60,7 +69,7 @@ const tikz = `
 
 \usepackage[active,tightpage]{preview}
 \PreviewEnvironment{tikzpicture}
-\setlength\PreviewBorder{1pt}%
+\setlength\PreviewBorder{1pt}
 
 \begin{document}
 %s
@@ -167,7 +176,7 @@ func (r *TexRenderer) runPdfLatex(fname string) {
 	cmd.Stderr = &stderr
 	err := cmd.Run()
 	if err != nil {
-		fmt.Printf("pdflatex cmd.Run() failed with %s\n", err)
+		fmt.Printf("pdflatex %s cmd.Run() failed with %s\n", fname, err)
 	}
 }
 

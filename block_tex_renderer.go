@@ -33,7 +33,7 @@ func (r *MathTexBlockRenderer) renderMathBlock(w util.BufWriter, source []byte, 
 		r.writeLines(&buf, source, n)
 		str := buf.String()
 		svg := r.renderer.Run(str)
-		w.WriteString(`<img alt="" src="data:image/svg+xml;base64, ` + base64.StdEncoding.EncodeToString(svg) + `">`)
+		w.WriteString(`<img alt="" style="width:100%;" src="data:image/svg+xml;base64, ` + base64.StdEncoding.EncodeToString(svg) + `">`)
 	} else {
 		_, _ = w.WriteString(`</div>` + "\n")
 	}
