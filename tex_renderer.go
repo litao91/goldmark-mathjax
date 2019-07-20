@@ -3,7 +3,7 @@ package mathjax
 import (
 	"bytes"
 	"fmt"
-	"html/template"
+	"text/template"
 	"io/ioutil"
 	"log"
 	"os"
@@ -13,6 +13,7 @@ import (
 const tmpl = `
 \documentclass[11pt]{article}
 \usepackage[paperwidth=180in,paperheight=180in]{geometry}
+\usepackage{tikz}
 \batchmode
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath}
@@ -40,7 +41,7 @@ type TexRenderer struct {
 }
 
 func NewDefaultTexRenderer() *TexRenderer {
-	var t, err = template.New("html").Parse(tmpl)
+	var t, err = template.New("text").Parse(tmpl)
 	if err != nil {
 		fmt.Println("error")
 	}
@@ -63,7 +64,6 @@ func (r *TexRenderer) Run(formula string) []byte {
 	if err != nil {
 		log.Fatalf("%v", err)
 	}
-	defer os.Remove(f.Name())
 	r.docTemplate.Execute(f, struct {
 		Doc string
 	}{
@@ -95,8 +95,8 @@ func (r *TexRenderer) runDvi2Svg(fname string) {
 	if err != nil {
 		fmt.Printf("dvi2svg cmd.Run() failed with %s\n", err)
 	}
-	outStr, errStr := string(stdout.Bytes()), string(stderr.Bytes())
-	fmt.Printf("out:\n%s\nerr:\n%s\n", outStr, errStr)
+	// outStr, errStr := string(stdout.Bytes()), string(stderr.Bytes())
+	// fmt.Printf("out:\n%s\nerr:\n%s\n", outStr, errStr)
 }
 
 func (r *TexRenderer) runLatex(fname string) {
@@ -108,6 +108,6 @@ func (r *TexRenderer) runLatex(fname string) {
 	if err != nil {
 		fmt.Printf("latex cmd.Run() failed with %s\n", err)
 	}
-	outStr, errStr := string(stdout.Bytes()), string(stderr.Bytes())
-	fmt.Printf("out:\n%s\nerr:\n%s\n", outStr, errStr)
+	// outStr, errStr := string(stdout.Bytes()), string(stderr.Bytes())
+	// fmt.Printf("out:\n%s\nerr:\n%s\n", outStr, errStr)
 }
