@@ -2,6 +2,7 @@ package mathjax
 
 import (
 	"bytes"
+	"encoding/base64"
 	"fmt"
 
 	"github.com/yuin/goldmark/ast"
@@ -32,7 +33,7 @@ func (r *InlineTexMathRenderer) renderInlineMath(w util.BufWriter, source []byte
 		svg := r.texRenderer.RunInline(buf.String())
 		_, _ = w.WriteString(`<span class="latex-svg inline">`)
 		if svg != nil {
-			_, _ = w.WriteString(string(svg))
+			_, _ = w.WriteString(`<img alt="" src="data:image/svg+xml;base64, ` + base64.StdEncoding.EncodeToString(svg) + `">`)
 		}
 		return ast.WalkSkipChildren, nil
 	}
