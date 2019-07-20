@@ -37,9 +37,9 @@ const displayBlockFormula = `
 \usepackage{amssymb}
 \usepackage{stmaryrd}
 \begin{document}
-\begin{equation}
+\begin{equation*}
 %s
-\end{equation}
+\end{equation*}
 \end{document}
 `
 
