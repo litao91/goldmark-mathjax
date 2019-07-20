@@ -16,28 +16,22 @@ const common = `
 {{.Doc}}
 `
 
-const displayInlineFormula = `${{.Doc}}$`
+const displayInlineFormula = `\( {{.Doc}} \)`
 
-const displayBlockFormula = `
-\[
+const displayBlockFormula = `\[
 {{.Doc}}
-\]
-`
+\]`
 
 const tmpl = `
 \documentclass[11pt]{article}
 \usepackage[paperwidth=180in,paperheight=180in]{geometry}
-\usepackage{tikz}
 \batchmode
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{stmaryrd}
-\newcommand{\R}{\mathbb{R}}
-
 \usepackage[verbose]{newunicodechar}
 \pagestyle{empty}
-
 \setlength{\topskip}{0pt}
 \setlength{\parindent}{0pt}
 \setlength{\abovedisplayskip}{0pt}
@@ -141,8 +135,8 @@ func (r *TexRenderer) runRaw(formula string) []byte {
 	f.WriteString(formula)
 	f.Sync()
 	f.Close()
-	r.runPdfLatex(f.Name())
-	r.runPdf2Svg(f.Name())
+	r.runLatex(f.Name())
+	r.runDvi2Svg(f.Name())
 	svgf, err := os.Open(f.Name() + ".svg")
 	if err != nil {
 		return nil
@@ -189,7 +183,7 @@ func (r *TexRenderer) runPdfLatex(fname string) {
 	cmd.Stderr = &stderr
 	err := cmd.Run()
 	if err != nil {
-		fmt.Printf("latex cmd.Run() failed with %s\n", err)
+		fmt.Printf("pdflatex cmd.Run() failed with %s\n", err)
 	}
 }
 
@@ -200,6 +194,6 @@ func (r *TexRenderer) runPdf2Svg(fname string) {
 	cmd.Stderr = &stderr
 	err := cmd.Run()
 	if err != nil {
-		fmt.Printf("dvi2svg cmd.Run() failed with %s\n", err)
+		fmt.Printf("pdf2svg cmd.Run() failed with %s\n", err)
 	}
 }
