@@ -72,3 +72,7 @@ func (b *mathJaxBlockParser) CanInterruptParagraph() bool {
 func (b *mathJaxBlockParser) CanAcceptIndentedLine() bool {
 	return false
 }
+
+func (b *mathJaxBlockParser) Trigger() []byte {
+	return nil
+}
