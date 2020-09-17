@@ -1,4 +1,4 @@
-module github.com/athul/goldmark-mathjax
+module github.com/litao91/goldmark-mathjax
 
 go 1.14
 
