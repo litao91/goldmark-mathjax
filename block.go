@@ -22,10 +22,6 @@ func NewMathJaxBlockParser() parser.BlockParser {
 	return defaultMathJaxBlockParser
 }
 
-func (b *mathJaxBlockParser) Trigger() []byte {
-	return []byte{'$'}
-}
-
 func (b *mathJaxBlockParser) Open(parent ast.Node, reader text.Reader, pc parser.Context) (ast.Node, parser.State) {
 	line, _ := reader.PeekLine()
 	pos := pc.BlockOffset()
