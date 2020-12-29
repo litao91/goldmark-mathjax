@@ -25,6 +25,9 @@ func NewMathJaxBlockParser() parser.BlockParser {
 func (b *mathJaxBlockParser) Open(parent ast.Node, reader text.Reader, pc parser.Context) (ast.Node, parser.State) {
 	line, _ := reader.PeekLine()
 	pos := pc.BlockOffset()
+	if pos == -1 {
+		return nil, parser.NoChildren
+	}
 	if line[pos] != '$' {
 		return nil, parser.NoChildren
 	}
