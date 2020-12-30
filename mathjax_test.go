@@ -7,8 +7,6 @@ import (
 	"testing"
 
 	"github.com/yuin/goldmark"
-	"github.com/yuin/goldmark/parser"
-	"github.com/yuin/goldmark/renderer"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -53,40 +51,25 @@ func TestMathJax(t *testing.T) {
 
 	for i, tc := range tests {
 		t.Run(fmt.Sprintf("%d: %s", i, tc.d), func(t *testing.T) {
-			out, err := renderMarkdown(tc.in)
+			out, err := renderMarkdown([]byte(tc.in))
 			if err != nil {
 				t.Fatal(err)
 			}
-			assert.Equal(t, tc.out, out)
+			assert.Equal(t, tc.out, strings.TrimSpace(string(out)))
 		})
 	}
 
 }
 
-func renderMarkdown(src string) (string, error) {
-	var parserOptions []parser.Option
-	var rendererOptions []renderer.Option
-
-	extensions := []goldmark.Extender{
-		MathJax,
-	}
-
+func renderMarkdown(src []byte) ([]byte, error) {
 	md := goldmark.New(
-		goldmark.WithExtensions(
-			extensions...,
-		),
-		goldmark.WithParserOptions(
-			parserOptions...,
-		),
-		goldmark.WithRendererOptions(
-			rendererOptions...,
-		),
+		goldmark.WithExtensions(MathJax),
 	)
 
 	var buf bytes.Buffer
-	if err := md.Convert([]byte(src), &buf); err != nil {
-		return "", err
+	if err := md.Convert(src, &buf); err != nil {
+		return nil, err
 	}
 
-	return strings.TrimSpace(buf.String()), nil
+	return buf.Bytes(), nil
 }
