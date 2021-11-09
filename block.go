@@ -57,7 +57,13 @@ func (b *mathJaxBlockParser) Continue(node ast.Node, reader text.Reader, pc pars
 		}
 	}
 
-	pos, padding := util.DedentPosition(line, 0, data.indent)
+	pos, padding := util.IndentPositionPadding(line, 0, 0, data.indent)
+	if pos < 0 {
+		pos = util.FirstNonSpacePosition(line)
+	}
+	if padding < 0 {
+		padding = 0
+	}
 	seg := text.NewSegmentPadding(segment.Start+pos, segment.Stop, padding)
 	node.Lines().Append(seg)
 	reader.AdvanceAndSetPadding(segment.Stop-segment.Start-pos-1, padding)
